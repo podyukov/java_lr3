@@ -15,6 +15,123 @@ public class Main {
                         bexit = false;
                         break;
                     }
+                    case 110: { // задание "дороги"
+                        Scanner scanner = new Scanner(System.in);
+                        List<City> cities = new ArrayList<>();
+                        // Ввод городов
+                        System.out.println("Введите названия городов. Для завершения оставьте строку пустой и нажмите Enter:");
+                        while (true) {
+                            String cityName = scanner.nextLine();
+                            if (cityName.isEmpty()) break;
+                            cities.add(new City(cityName));
+                        }
+                        // Ввод маршрутов для каждого города
+                        for (City city : cities) {
+                            System.out.printf("\nВведите количество маршрутов для города %s: ", city.getName());
+                            int routeCount = scanner.nextInt();
+                            scanner.nextLine(); // очистка перехода на новую строку
+
+                            for (int i = 0; i < routeCount; i++) {
+                                System.out.print("Введите город назначения: ");
+                                String destCityName = scanner.nextLine();
+
+                                // Проверка, существует ли уже этот город
+                                City destination = findCityByName(cities, destCityName);
+                                if (destination == null) {
+                                    destination = new City(destCityName);
+                                    cities.add(destination);
+                                }
+
+                                System.out.print("Введите стоимость маршрута: ");
+                                int cost = scanner.nextInt();
+                                scanner.nextLine(); // очистка перехода на новую строку
+
+                                city.addRoute(destination, cost);
+                            }
+                        }
+                        // Меню для добавления, обновления и удаления маршрутов
+                        while (true) {
+                            System.out.println("\nВыберите действие: ");
+                            System.out.println("1 - Добавить маршрут");
+                            System.out.println("2 - Обновить маршрут");
+                            System.out.println("3 - Удалить маршрут");
+                            System.out.println("4 - Показать маршруты всех городов");
+                            System.out.println("0 - Выйти");
+                            int choice = scanner.nextInt();
+                            scanner.nextLine(); // очистка перехода на новую строку
+                            if (choice == 0) break;
+                            switch (choice) {
+                                case 1:
+                                    System.out.print("Введите название города отправления: ");
+                                    String sourceName = scanner.nextLine();
+                                    City source = findCityByName(cities, sourceName);
+                                    if (source == null) {
+                                        System.out.println("Город не найден.");
+                                        continue;
+                                    }
+                                    System.out.print("Введите название города назначения: ");
+                                    String destName = scanner.nextLine();
+                                    City destination = findCityByName(cities, destName);
+                                    if (destination == null) {
+                                        destination = new City(destName);
+                                        cities.add(destination);
+                                    }
+                                    System.out.print("Введите стоимость маршрута: ");
+                                    int cost = scanner.nextInt();
+                                    scanner.nextLine();
+                                    source.addRoute(destination, cost);
+                                    break;
+                                case 2:
+                                    System.out.print("Введите название города отправления: ");
+                                    sourceName = scanner.nextLine();
+                                    source = findCityByName(cities, sourceName);
+                                    if (source == null) {
+                                        System.out.println("Город не найден.");
+                                        continue;
+                                    }
+                                    System.out.print("Введите название города назначения: ");
+                                    destName = scanner.nextLine();
+                                    destination = findCityByName(cities, destName);
+                                    if (destination != null) {
+                                        System.out.print("Введите новую стоимость маршрута: ");
+                                        int newCost = scanner.nextInt();
+                                        scanner.nextLine();
+                                        source.updateRoute(destination, newCost);
+                                    } else {
+                                        System.out.println("Маршрут не найден.");
+                                    }
+                                    break;
+                                case 3:
+                                    System.out.print("Введите название города отправления: ");
+                                    sourceName = scanner.nextLine();
+                                    source = findCityByName(cities, sourceName);
+                                    if (source == null) {
+                                        System.out.println("Город не найден.");
+                                        continue;
+                                    }
+                                    System.out.print("Введите название города назначения: ");
+                                    destName = scanner.nextLine();
+                                    destination = findCityByName(cities, destName);
+                                    if (destination != null) {
+                                        source.removeRoute(destination);
+                                    } else {
+                                        System.out.println("Маршрут не найден.");
+                                    }
+                                    break;
+                                case 4:
+                                    for (City city : cities) {
+                                        System.out.println(city);
+                                    }
+                                    break;
+                                default:
+                                    System.out.println("Некорректный выбор.");
+                                    break;
+                            }
+                        }
+                        scanner.close();
+                        break;
+                    }
+
                     case 35: { // задание "трёхмерная точка"
                         System.out.println("Введите точку");
                         Scanner scanner = new Scanner(System.in);
@@ -52,5 +169,14 @@ public class Main {
                 System.out.println("Введены некорректные данные!");
             }
         }
+    }
+    // Метод для поиска города по имени
+    private static City findCityByName(List<City> cities, String name) {
+        for (City city : cities) {
+            if (city.getName().equalsIgnoreCase(name)) {
+                return city;
+            }
+        }
+        return null;
     }
 }
